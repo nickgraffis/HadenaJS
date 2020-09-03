@@ -98,3 +98,5 @@ function lightOrDark(color, specificity = 2) {
       return 'dark';
   }
 }
+
+module.exports = getRandomColor();
