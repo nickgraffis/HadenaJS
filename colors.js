@@ -12,7 +12,7 @@ var rgbToHex = function (rgb) {
 /* 
 * Convert three RGB values (Red, Green, Blue) to HEX 
 */
-export var fullColorHex = function (r, g, b) {   
+var fullColorHex = function (r, g, b) {   
   var red = rgbToHex(r);
   var green = rgbToHex(g);
   var blue = rgbToHex(b);
