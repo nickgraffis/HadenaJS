@@ -1,0 +1,23 @@
+{
+  "name": "colorjs",
+  "version": "1.0.0",
+  "description": "A simple helper library for color related functions.",
+  "main": "colors.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nickgraffis/colorsjs.git"
+  },
+  "keywords": [
+    "colors",
+    "helpers"
+  ],
+  "author": "Nick Graffis",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nickgraffis/colorsjs/issues"
+  },
+  "homepage": "https://github.com/nickgraffis/colorsjs#readme"
+}
