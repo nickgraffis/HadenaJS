@@ -46,7 +46,7 @@ var hexToRBG = function (hex) {
 * Returns a random HEX color 
 * Not curently in use...
 */
-export function getRandomColor() {
+function getRandomColor() {
   var letters = '0123456789ABCDEF';
   var color = '#';
   for (var i = 0; i < 6; i++) {
@@ -61,7 +61,7 @@ export function getRandomColor() {
 * Accepts a specificiity, default of 2, which returns 2 options, LIGHT or DARK
 * TODO: Allow up to five values returning (BRIGHT, LIGHT, MEDIUM, DIM, DARK)
 */
-export function lightOrDark(color, specificity = 2) {
+function lightOrDark(color, specificity = 2) {
   // Variables for red, green, blue values
   var r, g, b, hsp;
   
