@@ -1,5 +1,5 @@
 {
-  "name": "colorjs",
+  "name": "hadenajs",
   "version": "1.0.0",
   "description": "A simple helper library for color related functions.",
   "main": "colors.js",
