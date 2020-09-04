@@ -1,3 +1,7 @@
+module.exports = {
+    getRandomColor: getRandomColor,
+    getColorMood: getColorMood,
+};
 /* 
 * Convert one RGB value (Red OR Green OR Blue) to HEX 
 */
@@ -44,9 +48,8 @@ var hexToRBG = function (hex) {
 
 /* 
 * Returns a random HEX color 
-* Not curently in use...
 */
-function getRandomColor() {
+module.exports = function getRandomColor() {
   var letters = '0123456789ABCDEF';
   var color = '#';
   for (var i = 0; i < 6; i++) {
@@ -61,7 +64,7 @@ function getRandomColor() {
 * Accepts a specificiity, default of 2, which returns 2 options, LIGHT or DARK
 * TODO: Allow up to five values returning (BRIGHT, LIGHT, MEDIUM, DIM, DARK)
 */
-function lightOrDark(color, specificity = 2) {
+module.exports = function getColorMood(color, specificity = 2) {
   // Variables for red, green, blue values
   var r, g, b, hsp;
   
@@ -89,14 +92,31 @@ function lightOrDark(color, specificity = 2) {
   hsp = Math.sqrt( 0.299 * (r * r) + 0.587 * (g * g) + 0.114 * (b * b));
 
   // Using the HSP value, determine whether the color is light or dark
-  if (hsp > 127.5) {
+  if (specificity = 2) {
+    if (hsp > 127.5) {
 
-      return 'light';
-  } 
-  else {
+      return 'BRIGHT';
+    } 
+    else {
 
-      return 'dark';
+        return 'DARK';
+    }
+  }
+
+  if (specificity = 4) {
+    if (hsp > 191) {
+      return 'BRIGHT';
+    }
+    else if (hsp < 191 && hsp > 127.5) {
+      return 'LIGHT';
+    }
+    else if (hsp < 127.5 && hsp > 63.5) {
+      return 'DIM';
+    }
+    else {
+      return 'DARK';
+    }
   }
 }
 
-module.exports = getRandomColor();
+
