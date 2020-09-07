@@ -1,6 +1,11 @@
+const km = require('@nickgraffis/kmeans');
+const math = require('matematik');
+
 module.exports = {
     getRandomColor: getRandomColor,
     getColorMood: getColorMood,
+    getPixels: getPixels,
+    extractColourPalette: extractColourPalette,
 };
 /* 
 * Convert one RGB value (Red OR Green OR Blue) to HEX 
@@ -49,13 +54,23 @@ var hexToRBG = function (hex) {
 /* 
 * Returns a random HEX color 
 */
-module.exports = function getRandomColor() {
-  var letters = '0123456789ABCDEF';
-  var color = '#';
-  for (var i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * 16)];
+function getRandomColor(options = [], type = 'HEX') {
+  if (options.length > 0) {
+    return options[Math.floor(Math.random() * options.length)];
   }
-  return color;
+  else {
+    var letters = '0123456789ABCDEF';
+    var color = '#';
+    for (var i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    if (type == 'HEX') {
+      return color;
+    }
+    else {
+      return hexToRBG(color);
+    }
+  }
 }
 
 /* 
@@ -64,7 +79,7 @@ module.exports = function getRandomColor() {
 * Accepts a specificiity, default of 2, which returns 2 options, LIGHT or DARK
 * TODO: Allow up to five values returning (BRIGHT, LIGHT, MEDIUM, DIM, DARK)
 */
-module.exports = function getColorMood(color, specificity = 2) {
+function getColorMood(color, specificity = 2) {
   // Variables for red, green, blue values
   var r, g, b, hsp;
   
@@ -92,7 +107,7 @@ module.exports = function getColorMood(color, specificity = 2) {
   hsp = Math.sqrt( 0.299 * (r * r) + 0.587 * (g * g) + 0.114 * (b * b));
 
   // Using the HSP value, determine whether the color is light or dark
-  if (specificity = 2) {
+  if (specificity == 2) {
     if (hsp > 127.5) {
 
       return 'BRIGHT';
@@ -103,7 +118,7 @@ module.exports = function getColorMood(color, specificity = 2) {
     }
   }
 
-  if (specificity = 4) {
+  if (specificity == 4) {
     if (hsp > 191) {
       return 'BRIGHT';
     }
@@ -119,4 +134,85 @@ module.exports = function getColorMood(color, specificity = 2) {
   }
 }
 
+function rgbToHSV(colour){
+    r = colour[0]/255, g = colour[1]/255, b = colour[2]/255;
+    var max = Math.max(r, g, b), min = Math.min(r, g, b);
+    var h, s, v = max;
+
+    var d = max - min;
+    s = max == 0 ? 0 : d / max;
+
+    if (max == min) {
+        h = 0;
+    } else {
+        switch(max) {
+        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+        case g: h = (b - r) / d + 2; break;
+        case b: h = (r - g) / d + 4; break;
+        }
+        h /= 6;
+    }
+
+    return [h,s,v];
+}
+
+function hsvToRGB(colour){
+    var r, g, b;
+    var h = colour[0];
+    var s = colour[1];
+    var v = colour[2];
+
+    var i = Math.floor(h * 6);
+    var f = h * 6 - i;
+    var p = v * (1 - s);
+    var q = v * (1 - f * s);
+    var t = v * (1 - (1 - f) * s);
+
+    switch(i % 6){
+    case 0: r = v, g = t, b = p; break;
+    case 1: r = q, g = v, b = p; break;
+    case 2: r = p, g = v, b = t; break;
+    case 3: r = p, g = q, b = v; break;
+    case 4: r = t, g = p, b = v; break;
+    case 5: r = v, g = p, b = q; break;
+    }
+
+    return [r * 255, g * 255, b * 255];
+}
+
+function getPixels(url) {
+  var image = new Image();
+  let googleProxyURL = 'https://images1-focus-opensocial.googleusercontent.com/gadgets/proxy?container=focus&refresh=2592000&url=';
+  image.crossOrigin = 'Anonymous';
+  image.src = googleProxyURL + encodeURIComponent(url);
+  var canvas = document.createElement('canvas');
+  canvas.width = image.width;
+  canvas.height = image.height;
+  canvas.getContext('2d').drawImage(image, 0, 0, image.width, image.height);
+  var colors = []
+  for (let h = 0; h < image.height; h++)
+  {
+    for (let w = 0; w < image.width; w++)
+    {
+      var rgba = canvas.getContext('2d').getImageData(h, w, 1, 1).data;
+      colors.push(rgba);
+    }
+  }
+
+  return colors;
+}
+
+function extractColourPalette(url, k) {
+    // Extract raw colours from image
+    const allColours = getPixels(url);
+
+    // Cluster raw colours
+    const clusters = km.kMeans(allColours, k);
+
+    // Calculate palette (mean colour of each cluster)
+    const colours = clusters.map(x => math.meanDataPoint(x));
+    const palette = colours.map(x => ({r: x[0], g: x[1], b: x[2], a: x[3]}));
+
+    return palette;
+}
 
