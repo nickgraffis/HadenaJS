@@ -4,11 +4,12 @@ const math = require('matematik');
 module.exports = {
     getRandomColor: getRandomColor,
     getColorMood: getColorMood,
-    getPixels: getPixels,
-    extractColourPalette: extractColourPalette,
+    extractPixelData: extractPixelData,
+    extractColorPalette: extractColorPalette,
+    fullColorHex: fullColorHex,
 };
-/* 
-* Convert one RGB value (Red OR Green OR Blue) to HEX 
+/*
+* Convert one RGB value (Red OR Green OR Blue) to HEX
 */
 var rgbToHex = function (rgb) {
   var hex = Number(rgb).toString(16);
@@ -18,18 +19,18 @@ var rgbToHex = function (rgb) {
   return hex;
 };
 
-/* 
-* Convert three RGB values (Red, Green, Blue) to HEX 
+/*
+* Convert three RGB values (Red, Green, Blue) to HEX
 */
-var fullColorHex = function (r, g, b) {   
+var fullColorHex = function (r, g, b) {
   var red = rgbToHex(r);
   var green = rgbToHex(g);
   var blue = rgbToHex(b);
   return red + green +blue;
 };
 
-/* 
-* Convert HEX to RGB 
+/*
+* Convert HEX to RGB
 * Not currently in use...
 */
 var hexToRBG = function (hex) {
@@ -47,12 +48,12 @@ var hexToRBG = function (hex) {
     g = "0x" + hex[3] + hex[4];
     b = "0x" + hex[5] + hex[6];
   }
-  
+
   return "rgb("+ +r + "," + +g + "," + +b + ")";
 }
 
-/* 
-* Returns a random HEX color 
+/*
+* Returns a random HEX color
 */
 function getRandomColor(options = [], type = 'HEX') {
   if (options.length > 0) {
@@ -73,7 +74,7 @@ function getRandomColor(options = [], type = 'HEX') {
   }
 }
 
-/* 
+/*
 * Determine if a color is light or dark
 * Accepts color as HEX or RGB
 * Accepts a specificiity, default of 2, which returns 2 options, LIGHT or DARK
@@ -82,27 +83,27 @@ function getRandomColor(options = [], type = 'HEX') {
 function getColorMood(color, specificity = 2) {
   // Variables for red, green, blue values
   var r, g, b, hsp;
-  
+
   // Check the format of the color, HEX or RGB?
   if (color.match(/^rgb/)) {
 
       // If RGB, store the red, green, blue values in separate variables
       color = color.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+(?:\.\d+)?))?\)$/);
-      
+
       r = color[1];
       g = color[2];
       b = color[3];
   } else {
-      
+
       // If HEX, convert it to RGB:
-      color = +("0x" + color.slice(1).replace( 
+      color = +("0x" + color.slice(1).replace(
       color.length < 5 && /./g, '$&$&'));
 
       r = color >> 16;
       g = color >> 8 & 255;
       b = color & 255;
   }
-  
+
   // HSP (Highly Sensitive Poo) alternative to HSV from http://alienryderflex.com/hsp.html
   hsp = Math.sqrt( 0.299 * (r * r) + 0.587 * (g * g) + 0.114 * (b * b));
 
@@ -111,7 +112,7 @@ function getColorMood(color, specificity = 2) {
     if (hsp > 127.5) {
 
       return 'BRIGHT';
-    } 
+    }
     else {
 
         return 'DARK';
@@ -180,39 +181,50 @@ function hsvToRGB(colour){
     return [r * 255, g * 255, b * 255];
 }
 
-function getPixels(url) {
-  var image = new Image();
-  let googleProxyURL = 'https://images1-focus-opensocial.googleusercontent.com/gadgets/proxy?container=focus&refresh=2592000&url=';
-  image.crossOrigin = 'Anonymous';
-  image.src = googleProxyURL + encodeURIComponent(url);
-  var canvas = document.createElement('canvas');
-  canvas.width = image.width;
-  canvas.height = image.height;
-  canvas.getContext('2d').drawImage(image, 0, 0, image.width, image.height);
-  var colors = []
-  for (let h = 0; h < image.height; h++)
-  {
-    for (let w = 0; w < image.width; w++)
-    {
-      var rgba = canvas.getContext('2d').getImageData(h, w, 1, 1).data;
-      colors.push(rgba);
-    }
-  }
 
-  return colors;
+function extractPixelData(canvas) {
+    // Separate out RGBA groups
+    const ctx = canvas.getContext('2d');
+    const data = ctx.getImageData(0,0,canvas.width,canvas.height).data;
+    let colours = [];
+    for (let i = 0; i < data.length; i += 4) {
+        colours.push([data[i], data[i+1], data[i+2], data[i+3]]);
+    }
+    return colours;
 }
 
-function extractColourPalette(url, k) {
+function extractColorPalette(canvas, k) {
     // Extract raw colours from image
-    const allColours = getPixels(url);
+    const allColours = extractPixelData(canvas);
 
     // Cluster raw colours
-    const clusters = km.kMeans(allColours, k);
+    const clusters = clustering.kMeans(allColours, k);
 
     // Calculate palette (mean colour of each cluster)
-    const colours = clusters.map(x => math.meanDataPoint(x));
-    const palette = colours.map(x => ({r: x[0], g: x[1], b: x[2], a: x[3]}));
-
+    var totals = clusters.map(x => x.length);
+    var total = totals.reduce(function(a, b){
+        return a + b;
+    }, 0);
+    const colours = clusters.map(x => ({mean: statsUtils.meanPoint(x), percentage: (x.length / total) * 100}));
+    const palette = colours.map(x => ({r: Math.round(x.mean[0]), g: Math.round(x.mean[1]), b: Math.round(x.mean[2]), a: Math.round(x.mean[3]), p: Math.round(x.percentage)}));
+    // console.log(palette);
     return palette;
 }
 
+function pixelsToColors(pixels, k) {
+  // Extract raw colours from image
+  const allColours = pixels;
+
+  // Cluster raw colours
+  const clusters = clustering.kMeans(allColours, k);
+
+  // Calculate palette (mean colour of each cluster)
+  var totals = clusters.map(x => x.length);
+  var total = totals.reduce(function(a, b){
+      return a + b;
+  }, 0);
+  const colours = clusters.map(x => ({mean: statsUtils.meanPoint(x), percentage: (x.length / total) * 100}));
+  const palette = colours.map(x => ({r: Math.round(x.mean[0]), g: Math.round(x.mean[1]), b: Math.round(x.mean[2]), a: Math.round(x.mean[3]), p: Math.round(x.percentage)}));
+  // console.log(palette);
+  return palette;
+}
