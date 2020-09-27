@@ -22,6 +22,9 @@
   "homepage": "https://github.com/nickgraffis/colorsjs#readme",
   "dependencies": {
     "@nickgraffis/kmeans": "^1.0.2",
-    "matematik": "^1.0.3"
-  }
+    "matematik": "^1.0.9"
+  },
+  "files": [
+  "colors.js"
+]
 }

@@ -7,7 +7,29 @@ module.exports = {
     extractPixelData: extractPixelData,
     extractColorPalette: extractColorPalette,
     fullColorHex: fullColorHex,
+    increaseValueOfRGB: increaseValueOfRGB,
+    increaseValueOfRGB: increaseValueOfRGB,
+    pixelsToColors: pixelsToColors,
 };
+
+function increaseValueOfRGB(colour, percent) {
+    console.log(colour);
+    var hsv = rgbToHSV(colour);
+    console.log(hsv);
+    hsv[2] = lerp(hsv[2], 1, percent);
+    console.log(hsv);
+    return hsvToRGB(hsv);
+}
+
+function increaseValueOfRGB(colour, percent) {
+    console.log(colour);
+    var hsv = rgbToHSV(colour);
+    console.log(hsv);
+    hsv[1] = lerp(hsv[1], 1, percent);
+    console.log(hsv);
+    return hsvToRGB(hsv);
+}
+
 /*
 * Convert one RGB value (Red OR Green OR Blue) to HEX
 */
@@ -53,7 +75,8 @@ var hexToRBG = function (hex) {
 }
 
 /*
-* Returns a random HEX color
+* Returns a random color, default is HEX, but can add optional type = 'RGB'
+* Optionally can add an array of colors to pick from
 */
 function getRandomColor(options = [], type = 'HEX') {
   if (options.length > 0) {
@@ -78,7 +101,7 @@ function getRandomColor(options = [], type = 'HEX') {
 * Determine if a color is light or dark
 * Accepts color as HEX or RGB
 * Accepts a specificiity, default of 2, which returns 2 options, LIGHT or DARK
-* TODO: Allow up to five values returning (BRIGHT, LIGHT, MEDIUM, DIM, DARK)
+* You can add specificity of 4 as well
 */
 function getColorMood(color, specificity = 2) {
   // Variables for red, green, blue values
