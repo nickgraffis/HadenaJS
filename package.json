@@ -1,6 +1,6 @@
 {
   "name": "hadenajs",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "A simple helper library for color related functions.",
   "main": "colors.js",
   "scripts": {
@@ -25,6 +25,6 @@
     "matematik": "^1.0.9"
   },
   "files": [
-  "colors.js"
-]
+    "colors.js"
+  ]
 }
