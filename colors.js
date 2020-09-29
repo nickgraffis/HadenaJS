@@ -228,7 +228,7 @@ function extractColorPalette(canvas, k) {
     var total = totals.reduce(function(a, b){
         return a + b;
     }, 0);
-    const colours = clusters.map(x => ({mean: statsUtils.meanPoint(x), percentage: (x.length / total) * 100}));
+    const colours = clusters.map(x => ({mean: math.meanPoint(x), percentage: (x.length / total) * 100}));
     const palette = colours.map(x => ({r: Math.round(x.mean[0]), g: Math.round(x.mean[1]), b: Math.round(x.mean[2]), a: Math.round(x.mean[3]), p: Math.round(x.percentage)}));
     // console.log(palette);
     return palette;
@@ -246,7 +246,7 @@ function pixelsToColors(pixels, k) {
   var total = totals.reduce(function(a, b){
       return a + b;
   }, 0);
-  const colours = clusters.map(x => ({mean: statsUtils.meanPoint(x), percentage: (x.length / total) * 100}));
+  const colours = clusters.map(x => ({mean: math.meanPoint(x), percentage: (x.length / total) * 100}));
   const palette = colours.map(x => ({r: Math.round(x.mean[0]), g: Math.round(x.mean[1]), b: Math.round(x.mean[2]), a: Math.round(x.mean[3]), p: Math.round(x.percentage)}));
   // console.log(palette);
   return palette;
