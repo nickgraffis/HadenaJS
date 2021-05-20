@@ -8,19 +8,9 @@ module.exports = {
     extractColorPalette: extractColorPalette,
     fullColorHex: fullColorHex,
     increaseValueOfRGB: increaseValueOfRGB,
-    increaseValueOfRGB: increaseValueOfRGB,
     pixelsToColors: pixelsToColors,
     hexToRGB: hexToRGB
 };
-
-export function increaseValueOfRGB(colour, percent) {
-    console.log(colour);
-    var hsv = rgbToHSV(colour);
-    console.log(hsv);
-    hsv[2] = lerp(hsv[2], 1, percent);
-    console.log(hsv);
-    return hsvToRGB(hsv);
-}
 
 export function increaseValueOfRGB(colour, percent) {
     console.log(colour);
