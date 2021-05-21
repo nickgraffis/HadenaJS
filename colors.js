@@ -1,17 +1,6 @@
 import { kMeans } from '@nickgraffis/kmeans'
 import { meanPoint } from 'matematik'
 
-module.exports = {
-    getRandomColor: getRandomColor,
-    getColorMood: getColorMood,
-    extractPixelData: extractPixelData,
-    extractColorPalette: extractColorPalette,
-    fullColorHex: fullColorHex,
-    increaseValueOfRGB: increaseValueOfRGB,
-    pixelsToColors: pixelsToColors,
-    hexToRGB: hexToRGB
-};
-
 export function increaseValueOfRGB(colour, percent) {
     console.log(colour);
     var hsv = rgbToHSV(colour);
