@@ -1,5 +1,5 @@
-const km = require('@nickgraffis/kmeans');
-const math = require('matematik');
+import { kMeans } from '@nickgraffis/kmeans'
+import { meanPoint } from 'matematik'
 
 module.exports = {
     getRandomColor: getRandomColor,
@@ -212,14 +212,14 @@ export function extractColorPalette(canvas, k) {
     const allColours = extractPixelData(canvas);
 
     // Cluster raw colours
-    const clusters = km.kMeans(allColours, k);
+    const clusters = kMeans(allColours, k);
 
     // Calculate palette (mean colour of each cluster)
     var totals = clusters.map(x => x.length);
     var total = totals.reduce(function(a, b){
         return a + b;
     }, 0);
-    const colours = clusters.map(x => ({mean: math.meanPoint(x), percentage: (x.length / total) * 100}));
+    const colours = clusters.map(x => ({mean: meanPoint(x), percentage: (x.length / total) * 100}));
     const palette = colours.map(x => ({r: Math.round(x.mean[0]), g: Math.round(x.mean[1]), b: Math.round(x.mean[2]), a: Math.round(x.mean[3]), p: Math.round(x.percentage)}));
     // console.log(palette);
     return palette;
@@ -230,14 +230,14 @@ export function pixelsToColors(pixels, k) {
   const allColours = pixels;
 
   // Cluster raw colours
-  const clusters = km.kMeans(allColours, k);
+  const clusters = kMeans(allColours, k);
 
   // Calculate palette (mean colour of each cluster)
   var totals = clusters.map(x => x.length);
   var total = totals.reduce(function(a, b){
       return a + b;
   }, 0);
-  const colours = clusters.map(x => ({mean: math.meanPoint(x), percentage: (x.length / total) * 100}));
+  const colours = clusters.map(x => ({mean: meanPoint(x), percentage: (x.length / total) * 100}));
   const palette = colours.map(x => ({r: Math.round(x.mean[0]), g: Math.round(x.mean[1]), b: Math.round(x.mean[2]), a: Math.round(x.mean[3]), p: Math.round(x.percentage)}));
   // console.log(palette);
   return palette;
